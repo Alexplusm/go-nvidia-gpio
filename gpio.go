@@ -83,6 +83,8 @@ func (p *Pin) GetLevel() (int, error) {
 
 	levelRaw := strings.TrimRight(string(content), "\n")
 
+	fmt.Println("levelRaw", levelRaw, "|", string(content))
+
 	level, err := strconv.Atoi(levelRaw)
 	if err != nil {
 		return 0, fmt.Errorf("[Pin.GetLevel][2]: %+v", err)
