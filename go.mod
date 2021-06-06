@@ -1,3 +1,3 @@
-module github.com/Alexplusm/go-nvidea-gpio
+module github.com/Alexplusm/go-nvidia-gpio
 
 go 1.16
