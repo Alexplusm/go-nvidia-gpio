@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"path"
 	"strconv"
+	"strings"
 )
 
 type Pin struct {
@@ -80,7 +81,9 @@ func (p *Pin) GetLevel() (int, error) {
 		return 0, fmt.Errorf("[Pin.GetLevel][1]: %+v", err)
 	}
 
-	level, err := strconv.Atoi(string(content))
+	levelRaw := strings.TrimRight(string(content), "\n")
+
+	level, err := strconv.Atoi(levelRaw)
 	if err != nil {
 		return 0, fmt.Errorf("[Pin.GetLevel][2]: %+v", err)
 	}
