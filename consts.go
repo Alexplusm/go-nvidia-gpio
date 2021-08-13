@@ -37,7 +37,7 @@ const (
 )
 
 const (
-	gpiosDirectory = "/sys/class/gpio"
+	gpiosDir = "/sys/class/gpio"
 )
 
 var gpioIndexNumberToSysfsNumberMap map[int]int
