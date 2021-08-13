@@ -39,3 +39,32 @@ const (
 const (
 	gpiosDirectory = "/sys/class/gpio"
 )
+
+var gpioIndexNumberToSysfsNumberMap map[int]int
+
+func init() {
+	gpioIndexNumberToSysfsNumberMap = map[int]int{
+		7:  GPIO_216,
+		11: GPIO_50,
+		12: GPIO_79,
+		13: GPIO_14,
+		15: GPIO_194,
+		16: GPIO_232,
+		18: GPIO_15,
+		19: GPIO_16,
+		21: GPIO_17,
+		22: GPIO_13,
+		23: GPIO_18,
+		24: GPIO_19,
+		26: GPIO_20,
+		29: GPIO_149,
+		31: GPIO_200,
+		32: GPIO_168,
+		33: GPIO_38,
+		35: GPIO_76,
+		36: GPIO_51,
+		37: GPIO_12,
+		38: GPIO_77,
+		40: GPIO_78,
+	}
+}
