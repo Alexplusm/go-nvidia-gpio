@@ -97,6 +97,8 @@ func (p Pin) GetDirection() (string, error) {
 
 	content = bytes.Trim(content, "/n/r")
 
+	fmt.Println("content: ", content)
+
 	fmt.Println("CONTENT: ", string(content), string(content) == OUT)
 
 	switch string(content) {
