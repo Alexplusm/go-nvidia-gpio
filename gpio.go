@@ -58,8 +58,6 @@ func (p Pin) GetLevel() (int, error) {
 
 	levelRaw := strings.TrimRight(string(content), "\n")
 
-	fmt.Println("levelRaw", levelRaw, "|", string(content))
-
 	level, err := strconv.Atoi(levelRaw)
 	if err != nil {
 		return 0, fmt.Errorf("gonvdgpio[Pin.GetLevel][2]: %+v", err)
@@ -89,17 +87,12 @@ func (p Pin) SetDirection(direction string) error {
 func (p Pin) GetDirection() (string, error) {
 	directionPath := path.Join(gpiosDir, p.getSysfsGpioPinName(), "direction")
 
-	fmt.Println("PATH: ", directionPath) //TODO
 	content, err := ioutil.ReadFile(directionPath)
 	if err != nil {
 		return "", fmt.Errorf("gonvdgpio[Pin.GetDirection][1]: %v | %v", err, err.Error())
 	}
 
 	content = bytes.TrimSpace(content)
-
-	fmt.Println("content: ", content)
-
-	fmt.Println("CONTENT: ", string(content), string(content) == OUT)
 
 	switch string(content) {
 	case IN:
@@ -137,7 +130,6 @@ func (p Pin) setup() error {
 	return nil
 }
 
-// todo: rename
 func (p Pin) getSysfsGpioPinName() string {
 	return fmt.Sprintf("gpio%v", p.sysfsNumber)
 }
