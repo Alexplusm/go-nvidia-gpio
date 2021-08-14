@@ -37,7 +37,7 @@ func SetupPin(indexNumber int, direction string, level int) (*Pin, error) {
 }
 
 func (p Pin) SetLevel(level int) error {
-	levelDirectory := path.Join(gpiosDir, p.getSysfsGpioPinName(), "value")
+	levelDirectory := path.Join(gpiosDir, p.getSysfsGpioPinName(), "value") // TODO: consts
 
 	err := ioutil.WriteFile(levelDirectory, []byte(strconv.Itoa(level)), 0666)
 	if err != nil {
@@ -102,6 +102,19 @@ func (p Pin) GetDirection() (string, error) {
 	}
 
 	return "", fmt.Errorf("gonvdgpio[Pin.GetDirection][1]: undefined")
+}
+
+func (p *Pin) Unexport() (err error) {
+	dir := path.Join(gpiosDir, "unexport")
+
+	if err = ioutil.WriteFile(dir, []byte(strconv.Itoa(p.sysfsNumber)), 0666); err != nil {
+		return fmt.Errorf("[Pin.Unexport][1]: %+v", err.Error())
+	}
+
+	p.indexNumber = -1
+	p.sysfsNumber = -1
+
+	return
 }
 
 // --- private

@@ -26,6 +26,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	defer func() {
+		err = p.Unexport()
+		if err != nil {
+			fmt.Println("defer: err: ", err)
+		}
+	}()
+
 	time.Sleep(time.Second * 2)
 
 	for {
