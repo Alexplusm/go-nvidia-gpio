@@ -46,7 +46,8 @@ func main() {
 				fmt.Println("interrupt: err: ", err)
 			}
 
-			os.Exit(228)
+			close(c)
+			return
 		}
 	}()
 
