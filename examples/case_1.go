@@ -30,14 +30,14 @@ func main() {
 
 	for {
 		if err = p.SetLevel(gonvdgpio.HIGH); err != nil {
-			fmt.Printf("Err: SetLevel: %+v", err)
+			fmt.Printf("Err: SetLevel: %+v\n", err)
 		}
 
 		printCurrState(p)
 		time.Sleep(time.Second * 2)
 
 		if err = p.SetLevel(gonvdgpio.LOW); err != nil {
-			fmt.Printf("Err: SetLevel: %+v", err)
+			fmt.Printf("Err: SetLevel: %+v\n", err)
 		}
 
 		printCurrState(p)
@@ -48,13 +48,13 @@ func main() {
 func printCurrState(pin *gonvdgpio.Pin) {
 	currLevel, err := pin.GetLevel()
 	if err != nil {
-		fmt.Printf("Err: GetLevel: %+v", err)
+		fmt.Printf("Err: GetLevel: %+v\n", err)
 	}
 
 	currDir, err := pin.GetDirection()
 	if err != nil {
-		fmt.Printf("Err: GetDirection: %+v", err)
+		fmt.Printf("Err: GetDirection: %+v\n", err)
 	}
 
-	fmt.Printf("Curr state: level = %v, direction = %v", currLevel, currDir)
+	fmt.Printf("Curr state: level = %v, direction = %v\n", currLevel, currDir)
 }
