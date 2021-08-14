@@ -22,22 +22,22 @@ func SetupPin(indexNumber int, direction string, level int) (*Pin, error) {
 	pin := &Pin{indexNumber: indexNumber, sysfsNumber: sysfsNumber}
 
 	if err := pin.setup(); err != nil {
-		return nil, fmt.Errorf("gonvdgpio[.SetupPin][2]: %v", indexNumber)
+		return nil, fmt.Errorf("gonvdgpio[.SetupPin][2]: %v", err)
 	}
 
 	if err := pin.SetDirection(direction); err != nil {
-		return nil, fmt.Errorf("gonvdgpio[.SetupPin][3]: %v", indexNumber)
+		return nil, fmt.Errorf("gonvdgpio[.SetupPin][3]: %v", err)
 	}
 
 	if err := pin.SetLevel(level); err != nil {
-		return nil, fmt.Errorf("gonvdgpio[.SetupPin][4]: %v", indexNumber)
+		return nil, fmt.Errorf("gonvdgpio[.SetupPin][4]: %v", err)
 	}
 
 	return pin, nil
 }
 
 func (p Pin) SetLevel(level int) error {
-	levelDirectory := path.Join(gpiosDir, p.getDirectoryName(), "value")
+	levelDirectory := path.Join(gpiosDir, p.getSysfsGpioPinName(), "value")
 
 	err := ioutil.WriteFile(levelDirectory, []byte(strconv.Itoa(level)), 0666)
 	if err != nil {
@@ -48,7 +48,7 @@ func (p Pin) SetLevel(level int) error {
 }
 
 func (p Pin) GetLevel() (int, error) {
-	levelDir := path.Join(gpiosDir, p.getDirectoryName(), "value")
+	levelDir := path.Join(gpiosDir, p.getSysfsGpioPinName(), "value")
 
 	content, err := ioutil.ReadFile(levelDir)
 	if err != nil {
@@ -75,7 +75,7 @@ func (p Pin) GetLevel() (int, error) {
 }
 
 func (p Pin) SetDirection(direction string) error {
-	directionPath := path.Join(gpiosDir, p.getDirectoryName(), "direction")
+	directionPath := path.Join(gpiosDir, p.getSysfsGpioPinName(), "direction")
 
 	err := ioutil.WriteFile(directionPath, []byte(direction), 0666)
 	if err != nil {
@@ -86,8 +86,9 @@ func (p Pin) SetDirection(direction string) error {
 }
 
 func (p Pin) GetDirection() (string, error) {
-	directionPath := path.Join(gpiosDir, p.getDirectoryName(), "direction")
+	directionPath := path.Join(gpiosDir, p.getSysfsGpioPinName(), "direction")
 
+	fmt.Println("PATH: ", directionPath)
 	content, err := ioutil.ReadFile(directionPath)
 	if err != nil {
 		return "", fmt.Errorf("gonvdgpio[Pin.GetDirection][1]: %v", err)
@@ -116,6 +117,7 @@ func (p Pin) setup() error {
 	return nil
 }
 
-func (p Pin) getDirectoryName() string {
+// todo: rename
+func (p Pin) getSysfsGpioPinName() string {
 	return fmt.Sprintf("gpio%v", p.sysfsNumber)
 }
