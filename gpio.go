@@ -88,10 +88,10 @@ func (p Pin) SetDirection(direction string) error {
 func (p Pin) GetDirection() (string, error) {
 	directionPath := path.Join(gpiosDir, p.getSysfsGpioPinName(), "direction")
 
-	fmt.Println("PATH: ", directionPath)
+	fmt.Println("PATH: ", directionPath) //TODO
 	content, err := ioutil.ReadFile(directionPath)
 	if err != nil {
-		return "", fmt.Errorf("gonvdgpio[Pin.GetDirection][1]: %v", err)
+		return "", fmt.Errorf("gonvdgpio[Pin.GetDirection][1]: %v | %v", err, err.Error())
 	}
 
 	switch string(content) {
