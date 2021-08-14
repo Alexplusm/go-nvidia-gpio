@@ -37,11 +37,10 @@ func SetupPin(indexNumber int, direction string, level int) (*Pin, error) {
 	return pin, nil
 }
 
-func (p Pin) SetLevel(level int) error {
-	levelDirectory := path.Join(gpiosDir, p.getSysfsGpioPinName(), "value") // TODO: consts
+func (p Pin) SetLevel(level int) (err error) {
+	dir := path.Join(gpiosDir, p.getSysfsGpioPinName(), sysfsValue)
 
-	err := ioutil.WriteFile(levelDirectory, []byte(strconv.Itoa(level)), 0666)
-	if err != nil {
+	if err = ioutil.WriteFile(dir, []byte(strconv.Itoa(level)), 0666); err != nil {
 		return fmt.Errorf("gonvdgpio[Pin.SetLevel][1]: %+v", err)
 	}
 
@@ -49,9 +48,9 @@ func (p Pin) SetLevel(level int) error {
 }
 
 func (p Pin) GetLevel() (int, error) {
-	levelDir := path.Join(gpiosDir, p.getSysfsGpioPinName(), "value")
+	dir := path.Join(gpiosDir, p.getSysfsGpioPinName(), sysfsValue)
 
-	content, err := ioutil.ReadFile(levelDir)
+	content, err := ioutil.ReadFile(dir)
 	if err != nil {
 		return 0, fmt.Errorf("gonvdgpio[Pin.GetLevel][1]: %+v", err)
 	}
@@ -74,9 +73,9 @@ func (p Pin) GetLevel() (int, error) {
 }
 
 func (p Pin) SetDirection(direction string) error {
-	directionPath := path.Join(gpiosDir, p.getSysfsGpioPinName(), "direction")
+	dir := path.Join(gpiosDir, p.getSysfsGpioPinName(), sysfsDirection)
 
-	err := ioutil.WriteFile(directionPath, []byte(direction), 0666)
+	err := ioutil.WriteFile(dir, []byte(direction), 0666)
 	if err != nil {
 		return fmt.Errorf("gonvdgpio[Pin.SetDirection][1]: %+v", err)
 	}
@@ -85,9 +84,9 @@ func (p Pin) SetDirection(direction string) error {
 }
 
 func (p Pin) GetDirection() (string, error) {
-	directionPath := path.Join(gpiosDir, p.getSysfsGpioPinName(), "direction")
+	dir := path.Join(gpiosDir, p.getSysfsGpioPinName(), sysfsDirection)
 
-	content, err := ioutil.ReadFile(directionPath)
+	content, err := ioutil.ReadFile(dir)
 	if err != nil {
 		return "", fmt.Errorf("gonvdgpio[Pin.GetDirection][1]: %v | %v", err, err.Error())
 	}
@@ -105,10 +104,10 @@ func (p Pin) GetDirection() (string, error) {
 }
 
 func (p *Pin) Unexport() (err error) {
-	dir := path.Join(gpiosDir, "unexport")
+	dir := path.Join(gpiosDir, sysfsUnexport)
 
 	if err = ioutil.WriteFile(dir, []byte(strconv.Itoa(p.sysfsNumber)), 0666); err != nil {
-		return fmt.Errorf("[Pin.Unexport][1]: %+v", err.Error())
+		return fmt.Errorf("gonvdgpio[Pin.Unexport][1]: %+v", err.Error())
 	}
 
 	p.indexNumber = -1
@@ -119,12 +118,11 @@ func (p *Pin) Unexport() (err error) {
 
 // --- private
 
-func (p Pin) setup() error {
-	filePath := path.Join(gpiosDir, "export")
+func (p Pin) setup() (err error) {
+	filePath := path.Join(gpiosDir, sysfsExport)
 
-	err := ioutil.WriteFile(filePath, []byte(strconv.Itoa(p.sysfsNumber)), 0666)
-	if err != nil {
-		return fmt.Errorf("gonvdgpio[Pin.setup][1]: %+v", err)
+	if err = ioutil.WriteFile(filePath, []byte(strconv.Itoa(p.sysfsNumber)), 0666); err != nil {
+		return fmt.Errorf("[Pin.setup][1]: %+v", err)
 	}
 
 	return nil

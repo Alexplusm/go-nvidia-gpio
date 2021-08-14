@@ -40,6 +40,13 @@ const (
 	gpiosDir = "/sys/class/gpio"
 )
 
+const (
+	sysfsValue     = "value"
+	sysfsDirection = "direction"
+	sysfsExport    = "export"
+	sysfsUnexport  = "unexport"
+)
+
 var gpioIndexNumberToSysfsNumberMap map[int]int
 
 func init() {
