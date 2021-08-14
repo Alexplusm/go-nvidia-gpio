@@ -9,76 +9,50 @@ import (
 )
 
 type Pin struct {
-	Value int
+	indexNumber int
+	sysfsNumber int
 }
 
-func (p *Pin) setValue(value int) *Pin {
-	p.Value = value
-
-	return p
-}
-
-func (p *Pin) setup() error {
-	filePath := path.Join(gpiosDirectory, "export")
-
-	err := ioutil.WriteFile(filePath, []byte(strconv.Itoa(p.Value)), 0666)
-	if err != nil {
-		return fmt.Errorf("[Pin.setup]: %+v", err)
+func SetupPin(indexNumber int, direction string, level int) (*Pin, error) {
+	sysfsNumber, ok := gpioIndexNumberToSysfsNumberMap[indexNumber]
+	if !ok {
+		return nil, fmt.Errorf("gonvdgpio[.SetupPin][1]: invalid pin number: %v", indexNumber)
 	}
 
-	return nil
-}
+	pin := &Pin{indexNumber: indexNumber, sysfsNumber: sysfsNumber}
 
-func (p *Pin) getDirectoryName() string {
-	return fmt.Sprintf("gpio%v", p.Value)
-}
-
-func (p *Pin) SetDirection(direction string) error {
-	directionPath := path.Join(gpiosDirectory, p.getDirectoryName(), "direction")
-
-	err := ioutil.WriteFile(directionPath, []byte(direction), 0666)
-	if err != nil {
-		return fmt.Errorf("[Pin.SetDirection]: %+v", err)
+	if err := pin.setup(); err != nil {
+		return nil, fmt.Errorf("gonvdgpio[.SetupPin][2]: %v", indexNumber)
 	}
 
-	return nil
-}
-
-func (p *Pin) GetDirection() (string, error) {
-	directionPath := path.Join(gpiosDirectory, p.getDirectoryName(), "direction")
-
-	content, err := ioutil.ReadFile(directionPath)
-	if err != nil {
-		return "", fmt.Errorf("[Pin.GetDirection]: %v", err)
+	if err := pin.SetDirection(direction); err != nil {
+		return nil, fmt.Errorf("gonvdgpio[.SetupPin][3]: %v", indexNumber)
 	}
 
-	switch string(content) {
-	case IN:
-		return IN, nil
-	case OUT:
-		return OUT, nil
+	if err := pin.SetLevel(level); err != nil {
+		return nil, fmt.Errorf("gonvdgpio[.SetupPin][4]: %v", indexNumber)
 	}
 
-	return "", fmt.Errorf("[Pin.GetDirection]: undefined")
+	return pin, nil
 }
 
-func (p *Pin) SetLevel(level int) error {
-	levelDirectory := path.Join(gpiosDirectory, p.getDirectoryName(), "value")
+func (p Pin) SetLevel(level int) error {
+	levelDirectory := path.Join(gpiosDir, p.getDirectoryName(), "value")
 
 	err := ioutil.WriteFile(levelDirectory, []byte(strconv.Itoa(level)), 0666)
 	if err != nil {
-		return fmt.Errorf("[Pin.SetLevel]: %+v", err)
+		return fmt.Errorf("gonvdgpio[Pin.SetLevel][1]: %+v", err)
 	}
 
 	return nil
 }
 
-func (p *Pin) GetLevel() (int, error) {
-	levelDirectory := path.Join(gpiosDirectory, p.getDirectoryName(), "value")
+func (p Pin) GetLevel() (int, error) {
+	levelDir := path.Join(gpiosDir, p.getDirectoryName(), "value")
 
-	content, err := ioutil.ReadFile(levelDirectory)
+	content, err := ioutil.ReadFile(levelDir)
 	if err != nil {
-		return 0, fmt.Errorf("[Pin.GetLevel][1]: %+v", err)
+		return 0, fmt.Errorf("gonvdgpio[Pin.GetLevel][1]: %+v", err)
 	}
 
 	levelRaw := strings.TrimRight(string(content), "\n")
@@ -87,7 +61,7 @@ func (p *Pin) GetLevel() (int, error) {
 
 	level, err := strconv.Atoi(levelRaw)
 	if err != nil {
-		return 0, fmt.Errorf("[Pin.GetLevel][2]: %+v", err)
+		return 0, fmt.Errorf("gonvdgpio[Pin.GetLevel][2]: %+v", err)
 	}
 
 	switch level {
@@ -97,31 +71,51 @@ func (p *Pin) GetLevel() (int, error) {
 		return HIGH, nil
 	}
 
-	return 0, fmt.Errorf("[Pin.GetLevel][3]: undefined")
+	return 0, fmt.Errorf("gonvdgpio[Pin.GetLevel][3]: undefined")
 }
 
-// TODO
-func ListPins() {}
+func (p Pin) SetDirection(direction string) error {
+	directionPath := path.Join(gpiosDir, p.getDirectoryName(), "direction")
 
-// TODO
-func CleanUp() error {
+	err := ioutil.WriteFile(directionPath, []byte(direction), 0666)
+	if err != nil {
+		return fmt.Errorf("gonvdgpio[Pin.SetDirection][1]: %+v", err)
+	}
+
 	return nil
 }
 
-func SetupPin(pinNumber int, direction string, level int) (*Pin, error) {
-	pin := new(Pin).setValue(pinNumber)
+func (p Pin) GetDirection() (string, error) {
+	directionPath := path.Join(gpiosDir, p.getDirectoryName(), "direction")
 
-	if err := pin.setup(); err != nil {
-		// TODO
+	content, err := ioutil.ReadFile(directionPath)
+	if err != nil {
+		return "", fmt.Errorf("gonvdgpio[Pin.GetDirection][1]: %v", err)
 	}
 
-	if err := pin.SetDirection(direction); err != nil {
-		// TODO
+	switch string(content) {
+	case IN:
+		return IN, nil
+	case OUT:
+		return OUT, nil
 	}
 
-	if err := pin.SetLevel(level); err != nil {
-		// TODO
+	return "", fmt.Errorf("gonvdgpio[Pin.GetDirection][1]: undefined")
+}
+
+// --- private
+
+func (p Pin) setup() error {
+	filePath := path.Join(gpiosDir, "export")
+
+	err := ioutil.WriteFile(filePath, []byte(strconv.Itoa(p.sysfsNumber)), 0666)
+	if err != nil {
+		return fmt.Errorf("gonvdgpio[Pin.setup][1]: %+v", err)
 	}
 
-	return pin, nil
+	return nil
+}
+
+func (p Pin) getDirectoryName() string {
+	return fmt.Sprintf("gpio%v", p.sysfsNumber)
 }
