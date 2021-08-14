@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
+	"os/signal"
 	"time"
 
 	gonvdgpio "github.com/alexplusm/go-nvidia-gpio"
@@ -30,6 +32,19 @@ func main() {
 		err = p.Unexport()
 		if err != nil {
 			fmt.Println("defer: err: ", err)
+		}
+	}()
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		for sig := range c {
+			fmt.Println("sig", sig.String())
+
+			err = p.Unexport()
+			if err != nil {
+				fmt.Println("interrupt: err: ", err)
+			}
 		}
 	}()
 
