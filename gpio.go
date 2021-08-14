@@ -95,7 +95,7 @@ func (p Pin) GetDirection() (string, error) {
 		return "", fmt.Errorf("gonvdgpio[Pin.GetDirection][1]: %v | %v", err, err.Error())
 	}
 
-	content = bytes.Trim(content, "/n/r")
+	content = bytes.TrimSpace(content)
 
 	fmt.Println("content: ", content)
 
