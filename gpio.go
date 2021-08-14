@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"path"
 	"strconv"
-	"strings"
 )
 
 type Pin struct {
@@ -55,9 +54,9 @@ func (p Pin) GetLevel() (int, error) {
 		return 0, fmt.Errorf("gonvdgpio[Pin.GetLevel][1]: %+v", err)
 	}
 
-	levelRaw := strings.TrimRight(string(content), "\n")
+	content = bytes.TrimSpace(content)
 
-	level, err := strconv.Atoi(levelRaw)
+	level, err := strconv.Atoi(string(content))
 	if err != nil {
 		return 0, fmt.Errorf("gonvdgpio[Pin.GetLevel][2]: %+v", err)
 	}
@@ -110,8 +109,8 @@ func (p *Pin) Unexport() (err error) {
 		return fmt.Errorf("gonvdgpio[Pin.Unexport][1]: %+v", err.Error())
 	}
 
-	p.indexNumber = -1
-	p.sysfsNumber = -1
+	p.indexNumber = -666
+	p.sysfsNumber = -666
 
 	return
 }
@@ -125,7 +124,7 @@ func (p Pin) setup() (err error) {
 		return fmt.Errorf("[Pin.setup][1]: %+v", err)
 	}
 
-	return nil
+	return
 }
 
 func (p Pin) getSysfsGpioPinName() string {
