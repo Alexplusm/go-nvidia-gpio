@@ -45,6 +45,8 @@ func main() {
 			if err != nil {
 				fmt.Println("interrupt: err: ", err)
 			}
+
+			os.Exit(228)
 		}
 	}()
 
