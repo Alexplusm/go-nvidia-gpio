@@ -1,6 +1,7 @@
 package gonvdgpio
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"path"
@@ -93,6 +94,8 @@ func (p Pin) GetDirection() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("gonvdgpio[Pin.GetDirection][1]: %v | %v", err, err.Error())
 	}
+
+	content = bytes.Trim(content, "/n/r")
 
 	fmt.Println("CONTENT: ", string(content), string(content) == OUT)
 
