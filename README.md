@@ -12,3 +12,8 @@ root@jetson-nano:~$ echo 0 > /sys/class/gpio/gpio79/value
 https://maker.pro/nvidia-jetson/tutorial/how-to-use-gpio-pins-on-jetson-nano-developer-kit
 
 // INFO: SRC: https://gist.github.com/titpetric/bc3e43b2c6efc2cd9364cf52ffbc17c4
+
+# Release
+
+* git tag v1.0.0
+* git push origin v1.0.0
