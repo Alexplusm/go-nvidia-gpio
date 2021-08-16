@@ -45,7 +45,7 @@ func NewPin(indexNumber int, direction string, level int) (IPin, error) {
 }
 
 func (p pin) SetLevel(level int) (err error) {
-	dir := path.Join(gpiosDir, p.getSysfsGpioPinName(), sysfsValue)
+	dir := path.Join(gpiosDir, p.getSysfsGpioPinName(), sysfsValueDir)
 
 	if err = ioutil.WriteFile(dir, []byte(strconv.Itoa(level)), 0666); err != nil {
 		return fmt.Errorf("gonvdgpio[pin.SetLevel][1]: %+v", err)
@@ -55,7 +55,7 @@ func (p pin) SetLevel(level int) (err error) {
 }
 
 func (p pin) GetLevel() (int, error) {
-	dir := path.Join(gpiosDir, p.getSysfsGpioPinName(), sysfsValue)
+	dir := path.Join(gpiosDir, p.getSysfsGpioPinName(), sysfsValueDir)
 
 	content, err := ioutil.ReadFile(dir)
 	if err != nil {
@@ -80,7 +80,7 @@ func (p pin) GetLevel() (int, error) {
 }
 
 func (p pin) SetDirection(direction string) (err error) {
-	dir := path.Join(gpiosDir, p.getSysfsGpioPinName(), sysfsDirection)
+	dir := path.Join(gpiosDir, p.getSysfsGpioPinName(), sysfsDirectionDir)
 
 	if err = ioutil.WriteFile(dir, []byte(direction), 0666); err != nil {
 		return fmt.Errorf("gonvdgpio[pin.SetDirection][1]: %+v", err)
@@ -90,7 +90,7 @@ func (p pin) SetDirection(direction string) (err error) {
 }
 
 func (p pin) GetDirection() (string, error) {
-	dir := path.Join(gpiosDir, p.getSysfsGpioPinName(), sysfsDirection)
+	dir := path.Join(gpiosDir, p.getSysfsGpioPinName(), sysfsDirectionDir)
 
 	content, err := ioutil.ReadFile(dir)
 	if err != nil {
@@ -110,7 +110,7 @@ func (p pin) GetDirection() (string, error) {
 }
 
 func (p *pin) Unexport() (err error) {
-	dir := path.Join(gpiosDir, sysfsUnexport)
+	dir := path.Join(gpiosDir, sysfsUnexportDir)
 
 	if err = ioutil.WriteFile(dir, []byte(strconv.Itoa(p.sysfsNumber)), 0666); err != nil {
 		return fmt.Errorf("gonvdgpio[pin.Unexport][1]: %+v", err.Error())
@@ -126,7 +126,7 @@ func (p *pin) Unexport() (err error) {
 
 // TODO: rename -> export
 func (p pin) setup() (err error) {
-	filePath := path.Join(gpiosDir, sysfsExport)
+	filePath := path.Join(gpiosDir, sysfsExportDir)
 
 	if err = ioutil.WriteFile(filePath, []byte(strconv.Itoa(p.sysfsNumber)), 0666); err != nil {
 		return fmt.Errorf("[pin.setup][1]: %+v", err)
