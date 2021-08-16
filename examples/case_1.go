@@ -23,7 +23,7 @@ func main() {
 	flag.IntVar(&level, "l", -1, "level")
 	flag.Parse()
 
-	p, err := gonvdgpio.SetupPin(pinNumber, direction, level)
+	p, err := gonvdgpio.NewPin(pinNumber, direction, level)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -70,7 +70,7 @@ func main() {
 	}
 }
 
-func printCurrState(pin *gonvdgpio.Pin) {
+func printCurrState(pin gonvdgpio.IPin) {
 	currLevel, err := pin.GetLevel()
 	if err != nil {
 		fmt.Printf("Err: GetLevel: %+v\n", err)

@@ -21,6 +21,12 @@ type pin struct {
 	sysfsNumber int
 }
 
+//	TODO: rename?
+func IndexPinNumberExist(indexNumber int) (ok bool) {
+	_, ok = gpioIndexNumberToSysfsNumberMap[indexNumber]
+	return
+}
+
 func NewPin(indexNumber int, direction string, level int) (IPin, error) {
 	sysfsNumber, ok := gpioIndexNumberToSysfsNumberMap[indexNumber]
 	if !ok {
